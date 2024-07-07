@@ -1,5 +1,3 @@
-name: RuboCop
-
 name: Lint
 on: [main]
 
