@@ -3,13 +3,11 @@ on: [pull_request, push]
 
 jobs:
   build:
-    env:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     name: Lint
     strategy:
       matrix:
-        ruby:
-          - '3.2.2'
+        os: [macos-latest, ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -17,7 +15,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ matrix.ruby }}
+          ruby-version: '3.2'
           bundler-cache: true
 
       - name: Install dependencies
