@@ -12,6 +12,7 @@ class App < Lennarb::Application::Base
 
   post '/' do |req, res|
     res.status = 200
-    res.json req.body 
+    res.json req.body
+
   end
 end

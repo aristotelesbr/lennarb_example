@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: |
           bundle config set without 'production staging test'
-          bundle install --with development
+          bundle install
           git checkout Gemfile.lock
 
       - name: Get file changes
