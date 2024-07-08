@@ -35,6 +35,26 @@ jobs:
         with:
           output: ' '
 
+      - name: Filter files based on RuboCop exclusions
+        id: filter_files
+        run: |
+          require 'yaml'
+
+          rubocop_config = YAML.load_file('.rubocop.yml')
+          excluded_paths = rubocop_config['AllCops']['Exclude'].map { |path| File.expand_path(path) }
+
+          changed_files = ENV['CHANGED_FILES'].split
+          filtered_files =
+            changed_files.reject do |file|
+              excluded_paths.any? { |pattern| File.fnmatch(pattern, File.expand_path(file)) }
+            end
+
+          puts "Filtered files: #{filtered_files.join(' ')}"
+          filtered_files.each { |file| puts "::set-output name=files::#{file}" }
+
+        env:
+          CHANGED_FILES: ${{ steps.get_file_changes.outputs.files }}
+
       - name: Echo file changes
         run: |
           echo Changed files: ${{ steps.get_file_changes.outputs.files }}
