@@ -36,7 +36,7 @@ jobs:
         run: echo "CHANGED_FILES=${{ steps.get_file_changes.outputs.files }}" >> $GITHUB_ENV
 
       - name: Filter files based on RuboCop exclusions
-        run: ruby filter_files.rb
+        run: ruby .github/workflows/filter_files.rb
 
       - name: Echo filtered files
         run: echo "Filtered files ${{ steps.filter_files.outputs.files }}"
