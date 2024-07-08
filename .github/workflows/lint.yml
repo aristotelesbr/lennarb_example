@@ -35,11 +35,11 @@ jobs:
       - name: Filter files based on RuboCop exclusions
         id: filter_files
         run: |
-          excluded_paths=$(ruby -r yaml -e 'puts YAML.load_file(".rubocop.yml")["AllCops"]["Exclude"]')
+          excluded_paths=$(ruby -r yaml -e 'puts YAML.load_file(".rubocop.yml")["AllCops"]["Exclude"].join("\n")')
           echo "Excluded paths: $excluded_paths"
 
           # Convert the Ruby array to a bash array
-          IFS=$'\n' read -d '' -r -a excluded_paths_array <<< "$excluded_paths"
+          IFS=$'\n' read -r -a excluded_paths_array <<< "$excluded_paths"
 
           # Filter out the excluded paths from the changed files
           files=$(echo "${{ steps.get_file_changes.outputs.files }}" | tr '\n' ' ')
