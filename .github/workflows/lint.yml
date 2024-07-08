@@ -48,4 +48,3 @@ jobs:
           else
             echo "No Ruby files changed"
           fi
-
