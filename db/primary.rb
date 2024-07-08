@@ -4,4 +4,4 @@ class Primary
   end
 end
 
-
+puts "Primary connection established."
