@@ -6,6 +6,7 @@ AllCops:
   TargetRubyVersion: 3.2.2
   Exclude:
     - 'bin/**/*'
+    - 'db/**/*'
 
 Naming/RescuedExceptionsVariableName:
   Enabled: false
