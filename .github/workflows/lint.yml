@@ -22,23 +22,26 @@ jobs:
         run: |
           bundle config set without 'production staging test'
           bundle install
-          git checkout Gemfile.lock
 
       - name: Get file changes
         id: get_file_changes
-        uses: dorner/file-changes-action@v1.2.0
-        with:
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          plaintext: true
+        run: |
+          git diff --name-only ${{ github.base_ref }} ${{ github.head_ref }} > changed_files.txt
 
       - name: Echo file changes
         run: |
-          echo Changed files: ${{ steps.get_file_changes.outputs.files }}
+          cat changed_files.txt
 
       - name: Run RuboCop on changed files
         run: |
-          if [ -n "${{ steps.get_file_changes.outputs.files }}" ]; then
-            bundle exec rubocop --fail-level C ${{ steps.get_file_changes.outputs.files }}
+          if [ -s changed_files.txt ]; then
+            files=$(cat changed_files.txt | grep '\.rb$' | tr '\n' ' ')
+            if [ -n "$files" ]; then
+              bundle exec rubocop --fail-level C $files
+            else
+              echo "No Ruby files changed"
+            fi
           else
             echo "No files changed"
           fi
+
