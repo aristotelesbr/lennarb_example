@@ -5,4 +5,3 @@ class Primary
 end
 
 puts Primary.connection
-
