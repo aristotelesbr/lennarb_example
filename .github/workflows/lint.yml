@@ -39,14 +39,15 @@ jobs:
         run: ruby .github/workflows/filter_files.rb
 
       - name: Echo filtered files
-        run: echo "Filtered files ${{ steps.filter_files.outputs.files }}"
+        run: echo "Filtered files ${{ env.FILTERED_FILES }}"
 
       - name: Run RuboCop on filtered files
         run: |
-          files="${{ steps.filter_files.outputs.files }}"
+          files="${{ env.FILTERED_FILES }}"
           if [ -n "$files" ]; then
             echo "Running RuboCop on changed Ruby files..."
             bundle exec rubocop $files
           else
             echo "No Ruby files changed"
           fi
+

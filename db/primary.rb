@@ -6,4 +6,3 @@ end
 
 puts Primary.connection
 
-
