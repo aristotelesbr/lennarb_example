@@ -9,7 +9,6 @@ class App < Lennarb::Application::Base
     res.html 'Hello, World!'
   end
 
-
   post '/' do |req, res|
     res.status = 200
     res.json  req.body
