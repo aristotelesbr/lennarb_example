@@ -29,23 +29,21 @@ jobs:
           bundle config set without 'production staging test'
           bundle install
 
-      - name: Get changed files
-        id: changes
-        uses: dorny/paths-filter@v2
+      - name: Get file changes
+        id: get_file_changes
+        uses: trilom/file-changes-action@v1.2.3
         with:
-          filters: |
-            ruby:
-              - '**/*.rb'
+          output: ' '
 
-      - name: Echo changed files
-        run: echo "${{ steps.changes.outputs.ruby }}"
-
-      - name: Run RuboCop on changed files
+      - name: Echo file changes
         run: |
-          files=$(echo "${{ steps.changes.outputs.ruby }}" | jq -r '.[]')
-          if [ -n "$files" ]; then
-            echo "Running RuboCop on changed Ruby files..."
-            bundle exec rubocop $files
-          else
-            echo "No Ruby files changed"
-          fi
+          echo Changed files: ${{ steps.get_file_changes.outputs.files }}
+
+      - name: Run lint
+        uses: samuelmeuli/lint-action@v1.4.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          rubocop: true
+          auto_fix: false
+          rubocop_args: -R --fail-level C --display-only-fail-level-offenses ${{ steps.get_file_changes.outputs.files}}
+          rubocop_command_prefix: bundle exec
