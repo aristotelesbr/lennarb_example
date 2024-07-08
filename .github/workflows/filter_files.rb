@@ -3,7 +3,7 @@
 require 'yaml'
 
 # Load excluded paths from RuboCop configuration
-rubocop_config = YAML.load_file('../../.rubocop.yml')
+rubocop_config = YAML.load_file('.rubocop.yml')
 excluded_paths = rubocop_config['AllCops']['Exclude']
 puts "Excluded paths: #{excluded_paths}"
 
