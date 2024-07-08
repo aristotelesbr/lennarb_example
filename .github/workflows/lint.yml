@@ -41,13 +41,16 @@ jobs:
           # Convert the Ruby array to a bash array
           IFS=$'\n' read -r -a excluded_paths_array <<< "$excluded_paths"
 
+          # Enable extended globbing
+          shopt -s globstar
+
           # Filter out the excluded paths from the changed files
           files=$(echo "${{ steps.get_file_changes.outputs.files }}" | tr '\n' ' ')
           filtered_files=""
           for file in $files; do
             exclude=false
             for pattern in "${excluded_paths_array[@]}"; do
-              if [[ $file == $pattern || $file == ${pattern//\*/*} ]]; then
+              if [[ $file == $pattern ]]; then
                 exclude=true
                 break
               fi
@@ -72,3 +75,4 @@ jobs:
           else
             echo "No Ruby files changed"
           fi
+

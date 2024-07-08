@@ -4,3 +4,4 @@ class Primary
   end
 end
 
+puts Primary.connection.tables
