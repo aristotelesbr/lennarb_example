@@ -5,3 +5,5 @@ class Primary
 end
 
 puts Primary.connection
+
+puts Primary.connection.tables
