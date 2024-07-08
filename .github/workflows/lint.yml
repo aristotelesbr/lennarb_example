@@ -1,6 +1,12 @@
 name: Lint Code With RuboCop
 
-on: [pull_request, push]
+on:
+  pull_request:
+    paths:
+      - '**.rb'
+  push:
+    paths:
+      - '**.rb'
 
 jobs:
   build:
@@ -26,7 +32,8 @@ jobs:
       - name: Get file changes
         id: get_file_changes
         run: |
-          git diff --name-only ${{ github.base_ref }} ${{ github.head_ref }} > changed_files.txt
+          git fetch origin ${{ github.base_ref }} --depth=1
+          git diff --name-only ${{ github.base_ref }} ${{ github.sha }} > changed_files.txt
 
       - name: Echo file changes
         run: |
@@ -44,3 +51,4 @@ jobs:
           else
             echo "No files changed"
           fi
+         fi
