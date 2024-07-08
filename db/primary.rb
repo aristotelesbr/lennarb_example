@@ -3,4 +3,3 @@ class Primary
     @connection ||= Sequel.connect("sqlite://db/primary.db")
   end
 end
-
