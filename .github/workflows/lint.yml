@@ -36,12 +36,26 @@ jobs:
         id: filter_files
         run: |
           # Read the excluded paths from the RuboCop configuration
-          excluded_paths=$(ruby -r yaml -e 'puts YAML.load_file(".rubocop.yml")["AllCops"]["Exclude"].join(" ")')
-          echo "Excluded paths: $excluded_paths"
+          excluded_patterns=$(ruby -r yaml -e 'puts YAML.load_file(".rubocop.yml")["AllCops"]["Exclude"].join(" ")')
+          echo "Excluded patterns: $excluded_patterns"
+
+          # Get list of changed files
+          files=$(echo "${{ steps.get_file_changes.outputs.files }}" | tr ' ' '\n')
 
           # Filter out the excluded paths from the changed files
-          files=$(echo "${{ steps.get_file_changes.outputs.files }}" | tr ' ' '\n')
-          filtered_files=$(echo "$files" | grep -v -E "$excluded_paths" | tr '\n' ' ')
+          filtered_files=""
+          for file in $files; do
+            exclude=false
+            for pattern in $excluded_patterns; do
+              if [[ $file == $pattern ]]; then
+                exclude=true
+                break
+              fi
+            done
+            if [ "$exclude" = false ]; then
+              filtered_files="$filtered_files $file"
+            fi
+          done
 
           echo "Filtered files: $filtered_files"
           echo "::set-output name=files::$filtered_files"
@@ -58,4 +72,3 @@ jobs:
           else
             echo "No Ruby files changed"
           fi
-
