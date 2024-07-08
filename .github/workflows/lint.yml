@@ -3,10 +3,10 @@ name: Lint Code With RuboCop
 on:
   pull_request:
     paths:
-      - '**.rb'
+      - '**/*.rb'
   push:
     paths:
-      - '**.rb'
+      - '**/*.rb'
 
 jobs:
   lint:
@@ -42,7 +42,7 @@ jobs:
 
       - name: Run RuboCop on changed files
         run: |
-          files="${{ steps.changes.outputs.ruby }}"
+          files=$(echo "${{ steps.changes.outputs.ruby }}" | jq -r '.[]')
           if [ -n "$files" ]; then
             echo "Running RuboCop on changed Ruby files..."
             bundle exec rubocop $files
