@@ -1,4 +1,5 @@
 ---
+inherit_from: .rubocop_todo.yml
 
 AllCops:
   EnabledByDefault: true
@@ -121,4 +122,3 @@ Style/Lambda:
     - line_count_dependent
     - lambda
     - literal
-
