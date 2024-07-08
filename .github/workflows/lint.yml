@@ -1,10 +1,10 @@
-name: Lint
+name: Lint Code With RuboCop
+
 on: [pull_request, push]
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-    name: Lint
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest]
