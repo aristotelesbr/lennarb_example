@@ -51,4 +51,3 @@ jobs:
           else
             echo "No files changed"
           fi
-         fi
