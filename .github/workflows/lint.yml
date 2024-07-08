@@ -37,11 +37,10 @@ jobs:
           if [ -s changed_files.txt ]; then
             files=$(cat changed_files.txt | grep '\.rb$' | tr '\n' ' ')
             if [ -n "$files" ]; then
-              bundle exec rubocop --fail-level C $files
+              bundle exec rubocop $files
             else
               echo "No Ruby files changed"
             fi
           else
             echo "No files changed"
-          fi
 
