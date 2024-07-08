@@ -2,7 +2,6 @@
 
 require 'lennarb'
 
-
 class App < Lennarb::Application::Base
   get '/' do |_req, res|
     res.status = 200
