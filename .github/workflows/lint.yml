@@ -38,22 +38,21 @@ jobs:
       - name: Filter files based on RuboCop exclusions
         id: filter_files
         run: |
-          require 'yaml'
+          # Read the excluded paths from the RuboCop configuration
+          excluded_paths=$(ruby -r yaml -e 'puts YAML.load_file(".rubocop.yml")["AllCops"]["Exclude"].join(" ")')
+          echo "Excluded paths: $excluded_paths"
 
-          rubocop_config = YAML.load_file('.rubocop.yml')
-          excluded_paths = rubocop_config['AllCops']['Exclude'].map { |path| File.expand_path(path) }
+          # Filter out the excluded paths from the changed files
+          files=$(echo "${{ steps.get_file_changes.outputs.files }}" | tr '\n' ' ')
+          filtered_files=""
+          for file in $files; do
+            if [[ ! $file =~ $excluded_paths ]]; then
+              filtered_files="$filtered_files $file"
+            fi
+          done
 
-          changed_files = ENV['CHANGED_FILES'].split
-          filtered_files =
-            changed_files.reject do |file|
-              excluded_paths.any? { |pattern| File.fnmatch(pattern, File.expand_path(file)) }
-            end
-
-          puts "Filtered files: #{filtered_files.join(' ')}"
-          filtered_files.each { |file| puts "::set-output name=files::#{file}" }
-
-        env:
-          CHANGED_FILES: ${{ steps.get_file_changes.outputs.files }}
+          echo "Filtered files: $filtered_files"
+          echo "::set-output name=files::$filtered_files"
 
       - name: Echo file changes
         run: |
