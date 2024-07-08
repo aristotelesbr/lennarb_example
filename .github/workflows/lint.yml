@@ -10,10 +10,7 @@ on:
 
 jobs:
   lint:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -46,7 +43,14 @@ jobs:
           files=$(echo "${{ steps.get_file_changes.outputs.files }}" | tr '\n' ' ')
           filtered_files=""
           for file in $files; do
-            if [[ ! $file =~ $excluded_paths ]]; then
+            exclude=false
+            for pattern in $excluded_paths; do
+              if [[ $file == $pattern ]]; then
+                exclude=true
+                break
+              fi
+            done
+            if [ "$exclude" = false ]; then
               filtered_files="$filtered_files $file"
             fi
           done
@@ -65,4 +69,5 @@ jobs:
             bundle exec rubocop $files
           else
             echo "No Ruby files changed"
-          fi 
+          fi
+
