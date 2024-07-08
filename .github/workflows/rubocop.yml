@@ -4,7 +4,6 @@ on: [pull_request, push]
 jobs:
   build:
     env:
-      api-dir: ./app
     runs-on: ubuntu-latest
     name: Lint
     strategy:
@@ -14,6 +13,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -37,10 +37,11 @@ jobs:
         run: |
           echo Changed files: ${{ steps.get_file_changes.outputs.files }}
 
-      - name: Run lint
-        uses: dorner/lint-action@v1.3.3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          rubocop_bundler: true
-          auto_fix: false
-          rubocop_bundler_args: -R --fail-level C ${{ steps.get_file_changes.outputs.files}}
+      - name: Run RuboCop on changed files
+        run: |
+          if [ -n "${{ steps.get_file_changes.outputs.files }}" ]; then
+            bundle exec rubocop --fail-level C ${{ steps.get_file_changes.outputs.files }}
+          else
+            echo "No files changed"
+          fi
+
