@@ -9,11 +9,11 @@ on:
       - '**.rb'
 
 jobs:
-  build:
+  lint:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [macos-latest, ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -29,25 +29,23 @@ jobs:
           bundle config set without 'production staging test'
           bundle install
 
-      - name: Get file changes
-        id: get_file_changes
-        run: |
-          git fetch origin ${{ github.base_ref }} --depth=1
-          git diff --name-only ${{ github.base_ref }} ${{ github.sha }} > changed_files.txt
+      - name: Get changed files
+        id: changes
+        uses: dorny/paths-filter@v2
+        with:
+          filters: |
+            ruby:
+              - '**/*.rb'
 
-      - name: Echo file changes
-        run: |
-          cat changed_files.txt
+      - name: Echo changed files
+        run: echo "${{ steps.changes.outputs.ruby }}"
 
       - name: Run RuboCop on changed files
         run: |
-          if [ -s changed_files.txt ]; then
-            files=$(cat changed_files.txt | grep '\.rb$' | tr '\n' ' ')
-            if [ -n "$files" ]; then
-              bundle exec rubocop $files
-            else
-              echo "No Ruby files changed"
-            fi
+          files="${{ steps.changes.outputs.ruby }}"
+          if [ -n "$files" ]; then
+            echo "Running RuboCop on changed Ruby files..."
+            bundle exec rubocop $files
           else
-            echo "No files changed"
+            echo "No Ruby files changed"
           fi
