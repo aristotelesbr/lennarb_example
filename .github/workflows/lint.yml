@@ -32,36 +32,11 @@ jobs:
         with:
           output: ' '
 
+      - name: Set CHANGED_FILES environment variable
+        run: echo "CHANGED_FILES=${{ steps.get_file_changes.outputs.files }}" >> $GITHUB_ENV
+
       - name: Filter files based on RuboCop exclusions
-        id: filter_files
-        run: |
-          excluded_paths=$(ruby -r yaml -e 'puts YAML.load_file(".rubocop.yml")["AllCops"]["Exclude"].join("\n")')
-          echo "Excluded paths: $excluded_paths"
-
-          # Convert the Ruby array to a bash array
-          IFS=$'\n' read -r -a excluded_paths_array <<< "$excluded_paths"
-
-          # Enable extended globbing
-          shopt -s globstar
-
-          # Filter out the excluded paths from the changed files
-          files=$(echo "${{ steps.get_file_changes.outputs.files }}" | tr '\n' ' ')
-          filtered_files=""
-          for file in $files; do
-            exclude=false
-            for pattern in "${excluded_paths_array[@]}"; do
-              if [[ $file == $pattern ]]; then
-                exclude=true
-                break
-              fi
-            done
-            if [ "$exclude" = false ]; then
-              filtered_files="$filtered_files $file"
-            fi
-          done
-
-          echo "Filtered files: $filtered_files"
-          echo "::set-output name=files::$filtered_files"
+        run: ruby filter_files.rb
 
       - name: Echo filtered files
         run: echo "Filtered files ${{ steps.filter_files.outputs.files }}"
@@ -75,4 +50,3 @@ jobs:
           else
             echo "No Ruby files changed"
           fi
-
